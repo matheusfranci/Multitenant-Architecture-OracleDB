@@ -7,8 +7,9 @@ set sqlprompt "_user'@'_connect_identifier> "
 
 -- Queries de referência
 column nome heading "NOME" Format a15 JUSTIFY CENTER
-column DESDE heading "DESDE" Format a21 JUSTIFY CENTER
+column DESDE heading "ULTIMO STARTUP" Format a21 JUSTIFY CENTER
 column CRIADO heading "CRIADO" Format a21 JUSTIFY CENTER
+column STATUS heading "STATUS" JUSTIFY CENTER
 column ID format 99 JUSTIFY CENTER
 SET UNDERLINE =
 set colsep ' | '

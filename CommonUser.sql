@@ -34,7 +34,15 @@ SELECT OWNER, OBJECT_NAME, FROM DBA_OBJECTS WHERE OWNER LIKE 'USUARIO';
 
 -- Caso tenha sessão ativa
 ALTER SYSTEM KILL SESSION 'SID, SERIAL';
+ALTER SYSTEM DISCONNECT SESSION 'SID, SERIAL' IMMEDIATE;
 DROP USER matheus;
 
 -- Caso o usuário possua objetos
 DROP USER matheus cascade;
+
+-- Permissão para atuar em somente uma Objeto
+
+GRANT SELECT ON HR.EMPLOYEES TO matheus;
+GRANT UPDATE ON HR.EMPLOYEES TO matheus;
+GRANT DELETE ON HR.EMPLOYEES TO matheus;
+

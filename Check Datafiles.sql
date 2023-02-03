@@ -1,9 +1,12 @@
-COLUMN PDB_ID FORMAT 999
-COLUMN PDB_NAME FORMAT A8
-COLUMN FILE_ID FORMAT 9999
-COLUMN TABLESPACE_NAME FORMAT A10
-COLUMN FILE_NAME FORMAT A45
-SELECT p.PDB_ID, p.PDB_NAME, d.FILE_ID, d.TABLESPACE_NAME, d.FILE_NAME
-  FROM DBA_PDBS p, CDB_DATA_FILES d
-  WHERE p.PDB_ID = d.CON_ID
-  ORDER BY p.PDB_ID;
+col tablespace for a10
+SELECT d.con_id,A.tablespace_name tablespace, D.mb_total,
+SUM (A.used_blocks * D.block_size) / 1024 / 1024 mb_used,
+D.mb_total - SUM (A.used_blocks * D.block_size) / 1024 / 1024 mb_free
+FROM v$sort_segment A,
+(
+SELECT b.con_id, b.tablespace_name, C.block_size, SUM (C.bytes) / 1024 / 1024 mb_total
+FROM cdb_temp_files B, v$tempfile C
+WHERE B.con_id= C.con_id and b.file_name = c.name
+GROUP BY b.con_id,b.tablespace_name, C.block_size) D
+WHERE A.tablespace_name = D.tablespace_name
+GROUP by D.con_id,A.tablespace_name, D.mb_total;

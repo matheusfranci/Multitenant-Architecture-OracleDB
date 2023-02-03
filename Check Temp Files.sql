@@ -1,7 +1,12 @@
-COLUMN CON_ID FORMAT 999
-COLUMN FILE_ID FORMAT 9999
-COLUMN TABLESPACE_NAME FORMAT A15
-COLUMN FILE_NAME FORMAT A45
-SELECT CON_ID, FILE_ID, TABLESPACE_NAME, FILE_NAME
-  FROM CDB_TEMP_FILES
-  ORDER BY CON_ID;
+col tablespace for a10
+SELECT d.con_id,A.tablespace_name tablespace, D.mb_total,
+SUM (A.used_blocks * D.block_size) / 1024 / 1024 mb_used,
+D.mb_total - SUM (A.used_blocks * D.block_size) / 1024 / 1024 mb_free
+FROM v$sort_segment A,
+(
+SELECT b.con_id, b.tablespace_name, C.block_size, SUM (C.bytes) / 1024 / 1024 mb_total
+FROM cdb_temp_files B, v$tempfile C
+WHERE B.con_id= C.con_id and b.file_name = c.name
+GROUP BY b.con_id,b.tablespace_name, C.block_size) D
+WHERE A.tablespace_name = D.tablespace_name
+GROUP by D.con_id,A.tablespace_name, D.mb_total;
